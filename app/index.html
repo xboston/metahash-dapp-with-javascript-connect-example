@@ -40,7 +40,7 @@
   </div>
 
   <div class="container">
-    Проект <a href="https://metawat.ch/">metawat.ch</a>.
+    v 7d7a9ad, проект <a href="https://metawat.ch/">metawat.ch</a>.
   </div>
 
   <script>
@@ -71,11 +71,10 @@
       new QWebChannel(qt.webChannelTransport, function (channel) {
         var mainWindow = channel.objects.mainWindow;
         mainWindow.getAllMHCWalletsJson(function (returnValue) {
-          alert(returnValue);
-          render(returnValue, "MHC");
+          render(JSON.parse(returnValue), "MHC");
         });
         mainWindow.getAllWalletsJson(function (returnValue) {
-          render(returnValue, "THC");
+          render((JSON.parsereturnValue), "THC");
         });
       });
     })();
