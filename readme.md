@@ -5,12 +5,12 @@ Dapp приложения сети https://metahash.org - это не тольк
 
 ## Как это работает
 Первое - подключаем библиотеку взаимодействия со внутренним API:
-```
+```html
 <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 ```
 
 Второе - вызываем нужный метод и обрабатываем результат, методы возвращают результат строкой с json внутри, не забудьте распарсить:
-```
+```js
 <script>
 (function () {
     new QWebChannel(qt.webChannelTransport, function (channel) {
