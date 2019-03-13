@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>MetaHash DAPP from https://metawat.ch/</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="one-half column" style="margin-top: 25%">
+        <h4>DAPP Wallet</h4>
+        <p>Крохотный пример работы dapp приложений сети MetaHash,
+          используя api приложения отображает список
+          кошельков зарегистрированных в MetaGate.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <table class="u-full-width" id="walls">
+      <thead>
+        <tr>
+          <th>Address</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody id="wall_list"></tbody>
+    </table>
+  </div>
+
+  <div class="container">
+    Проект <a href="https://metawat.ch/">metawat.ch</a>.
+  </div>
+
+  <script>
+
+    var $ = document.getElementById.bind(document);
+    var tableRef = $('walls').getElementsByTagName('tbody')[0];
+
+    function render(walls, type) {
+      ww.forEach((k) => {
+        var newRow = tableRef.insertRow(tableRef.rows.length);
+
+        var newCell = newRow.insertCell(0);
+
+        var newA = document.createElement('a');
+        newA.setAttribute('href', "app://Wallet#!/" + type + "/transfer/" + k);
+
+        var newAText = document.createTextNode(k);
+        newA.appendChild(newAText);
+        newCell.appendChild(newA);
+
+        var newCell = newRow.insertCell(1);
+        var typeNode = document.createTextNode(type);
+        newCell.appendChild(typeNode);
+      })
+    }
+
+    (function () {
+      new QWebChannel(qt.webChannelTransport, function (channel) {
+        var mainWindow = channel.objects.mainWindow;
+        mainWindow.getAllMHCWalletsJson(function (returnValue) {
+          alert(returnValue);
+          render(returnValue, "MHC");
+        });
+        mainWindow.getAllWalletsJson(function (returnValue) {
+          render(returnValue, "THC");
+        });
+      });
+    })();
+  </script>
+</body>
+
+</html>
