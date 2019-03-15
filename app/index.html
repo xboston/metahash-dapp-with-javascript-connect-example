@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
   <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+  <script src="https://dystroy.org/JSON.prune/.js"></script>
 </head>
 
 <body style="background: #fff;">
@@ -18,13 +19,18 @@
   <div class="container">
     <div class="row">
       <div class="one-half column" style="margin-top: 10%">
-        <h4>DAPP Wallet</h4>
-        <p>Крохотный пример работы dapp приложений сети MetaHash.
-          Используя api приложения MetaGate отображает список
-          кошельков пользователя.
-        </p>
+        <h4>DApp demo from metawat.ch (0002), <a href="http://localhost:8000/">refresh it!</a></h4>
+        <p>Примеры работы dapp приложений внутри сети MetaHash.</p>
+        <button onclick="return run();">ckick!</button>
       </div>
     </div>
+  </div>
+
+  <div class="container">
+    <pre>
+        <code id="result">result</code>
+    </pre>
+
   </div>
 
   <div class="container">
@@ -33,6 +39,7 @@
         <tr>
           <th>Address</th>
           <th>Type</th>
+          <th>Balance</th>
         </tr>
       </thead>
       <tbody id="wall_list"></tbody>
@@ -40,44 +47,187 @@
   </div>
 
   <div class="container" style="margin-bottom: 5%">
-    github: <a href="https://github.com/xboston/metahash-dapp-with-javascript-connect-example">metahash-dapp-with-javascript-connect-example</a>
-    fdb7f2d, проект <a href="https://metawat.ch/">metawat.ch</a>.
+    github: <a href="#" onclick="return openInBrowser('https://github.com/xboston/metahash-dapp-with-javascript-connect-example');">metahash-dapp-with-javascript-connect-example</a>
+    fdb7f2d, проект <a href="#" onclick="return openInBrowser('https://metawat.ch/');">metawat.ch</a>.
   </div>
 
   <script>
-    var $ = document.getElementById.bind(document);
-    var tableRef = $('walls').getElementsByTagName('tbody')[0];
+    let $ = document.getElementById.bind(document);
+    let tableRef = $('walls').getElementsByTagName('tbody')[0];
+    const currencies = ['', 'TMH', 'BTC', 'ETH', 'MHC'];
 
-    function render(walls, type) {
-      walls.forEach((k) => {
-        var newRow = tableRef.insertRow(tableRef.rows.length);
+    window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
+      alert("Error occured: " + errorMsg); //or any message
+      return false;
+    }
 
-        var newCell = newRow.insertCell(0);
+    window.test = true;
+    let qt = window.qt;
 
-        var newA = document.createElement('a');
-        newA.setAttribute('href', "app://Wallet#!/" + type + "/transfer/" + k);
+    let config = {
+      currency: 'tmh',
+      net: 'dev',
+    }
 
-        var newAText = document.createTextNode(k);
-        newA.appendChild(newAText);
-        newCell.appendChild(newA);
+    const calcBalance = address => {
+      return new Promise((resolve, reject) => {
+        if (true) {
+          setTimeout(() => {
+            toLog(address);
+            resolve(calcBalance(address));
+          }, 10);
+        } else {
+          return getDataFromQt
+            .calcBalance(address, `${config.currency}_${config.net}`)
+            .then(data => {
+              let balance = 0;
+              if (data[2]) {
+                let res = JSON.parse(data[2]);
+                balance = res.balance / 1e6;
+              }
+              toLog(data);
+              qtBlocked = false;
+              resolve(balance);
+            });
+        }
+      });
+    };
 
-        var newCell = newRow.insertCell(1);
-        var typeNode = document.createTextNode(type);
-        newCell.appendChild(typeNode);
+    function run() {
+      new QWebChannel(qt.webChannelTransport, function (channel) {
+
+        toLog("start");
+
+        // общие методы работы с приложением
+        var mainWindow = channel.objects.mainWindow;
+        // mainWindow.openWalletPathInStandartExplorer(); // +
+        // mainWindow.getIpsServers('1', 'proxy', 10, 3); // +
+        // mainWindow.getIpsServers('2', 'torrent', 10, 3); // +
+        // mainWindow.getIpsServers('3', 'proxy_main', 10, 3); // +
+        // mainWindow.getIpsServers('4', 'torrent_main', 10, 3); // +
+
+        const group = "aaa__tmh"
+
+        // работа с транзакциями
+        var transactions = channel.objects.transactions;
+        transactions.calcBalance("0x00d5d7437fd0a10415cfb194e17a79cf63af018f5134bec07d", "tmh_dev");
+        return;
+
+        transactions.registerAddresses([{
+          address: "0x00d5d7437fd0a10415cfb194e17a79cf63af018f5134bec07d",
+          currency: "tmh_dev",
+          type: "torrent",
+          group: group,
+          name: "1"
+        }]);
+
+        transactions.setCurrentGroup(group)
+
+        setInterval(() => {
+          // toLog(address);
+          transactions.calcBalance("0x00d5d7437fd0a10415cfb194e17a79cf63af018f5134bec07d", "tmh_dev");
+        }, 250);
+
+
+        // transactions.getTxs2("0x00d5d7437fd0a10415cfb194e17a79cf63af018f5134bec07d", "tmh", 1, 2, true)
+        // transactions.calcBalance("0x00d5d7437fd0a10415cfb194e17a79cf63af018f5134bec07d", "tmh");
+
+        toLog("done");
+      });
+    }
+
+    function txsSetCurrentGroupResultJs(result, errorNum, errorMessage) {
+      toLog({
+        result,
+        errorNum,
+        errorMessage
       })
     }
 
-    (function () {
+    function getIpsServersJs(requestId, json, errorInt, errorString) {
+      toLog({
+        requestId,
+        json,
+        errorInt,
+        errorString
+      })
+    }
+
+    function txsRegisterAddressJs(address, currency, errorNum, errorMessage) {
+      toLog({
+        address,
+        currency,
+        errorNum,
+        errorMessage
+      })
+    }
+
+    function txsGetTxs2Js(address, currency, result, errorNum, errorMessage) {
+      toLog({
+        address,
+        currency,
+        result,
+        errorNum,
+        errorMessage
+      });
+    }
+
+    function toLog(v) {
+      $('result').innerHTML = JSON.stringify(v) + "\n" + $('result').innerHTML;
+    }
+
+    function render(walls, type, balance) {
+      walls.forEach((address) => {
+        renderRow(address, type, balance);
+      })
+    }
+
+    function renderRow(address, currency, balance) {
+      var newRow = tableRef.insertRow(tableRef.rows.length);
+      newRow.insertCell(0).appendChild(document.createTextNode(address));
+      newRow.insertCell(1).appendChild(document.createTextNode(currency));
+      newRow.insertCell(2).appendChild(document.createTextNode(balance));
+    }
+
+    function txsCalcBalanceResultJs(address, currency, result, errorNum, errorMessage) {
+      toLog({
+        address,
+        currency,
+        result,
+        errorNum,
+        errorMessage
+      })
+    }
+
+    // (function () {
+    //   new QWebChannel(qt.webChannelTransport, function (channel) {
+
+    //     // общие методы работы с приложением
+    //     var mainWindow = channel.objects.mainWindow;
+    //     // работа с транзакциями
+    //     var transactions = channel.objects.transactions;
+
+    //     mainWindow.getAllMHCWalletsJson(function (returnValue) {
+    //       render(JSON.parse(returnValue), "MHC", "000");
+    //     });
+
+    //     mainWindow.getAllWalletsJson(function (returnValue) {
+    //       // transactions.calcBalance(returnValue, "TMH");
+    //       render(JSON.parse(returnValue), "TMH", "000");
+    //       transactions.calcBalance(JSON.parse(returnValue), "TMH");
+    //     });
+
+    //     // transactions.calcBalance("0x0025e6788cc3679ef135da65cf352a77b77d0cf1fc9bf8f962", "TMH");
+    //     // transactions.calcBalance("0x00da71d4394d5f7eabfe1bbf5d7175ddf1b357041c7a2870e6", "MHC");
+    //   });
+    // })();
+
+    function openInBrowser(url) {
       new QWebChannel(qt.webChannelTransport, function (channel) {
         var mainWindow = channel.objects.mainWindow;
-        mainWindow.getAllMHCWalletsJson(function (returnValue) {
-          render(JSON.parse(returnValue), "MHC");
-        });
-        mainWindow.getAllWalletsJson(function (returnValue) {
-          render(JSON.parse(returnValue), "THC");
-        });
+        mainWindow.qtOpenInBrowser(url);
       });
-    })();
+    }
   </script>
 </body>
 
