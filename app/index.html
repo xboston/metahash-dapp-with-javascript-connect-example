@@ -11,26 +11,17 @@
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
   <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
-  <script src="https://dystroy.org/JSON.prune/.js"></script>
 </head>
 
 <body style="background: #fff;">
 
   <div class="container">
     <div class="row">
-      <div class="one-half column" style="margin-top: 10%">
-        <h4>DApp demo from metawat.ch (0002), <a href="http://localhost:8000/">refresh it!</a></h4>
-        <p>Примеры работы dapp приложений внутри сети MetaHash.</p>
-        <button onclick="return run();">ckick!</button>
+      <div class="one-ten column" style="margin-top: 10%">
+        <h4>DApp demo from <a ref="#" onclick="return openInBrowser('https://metawat.ch/');">metawat.ch</a> (v0003)</h4>
+        <p>Примеры работы приложений внутри сети MetaHash.</p>
       </div>
     </div>
-  </div>
-
-  <div class="container">
-    <pre>
-        <code id="result">result</code>
-    </pre>
-
   </div>
 
   <div class="container">
@@ -48,139 +39,12 @@
 
   <div class="container" style="margin-bottom: 5%">
     github: <a href="#" onclick="return openInBrowser('https://github.com/xboston/metahash-dapp-with-javascript-connect-example');">metahash-dapp-with-javascript-connect-example</a>
-    fdb7f2d, проект <a href="#" onclick="return openInBrowser('https://metawat.ch/');">metawat.ch</a>.
+    fdb7f2d, проект <a href="#" onclick="return openInBrowser('https://metawat.ch/');">metawat</><a href="http://localhost:8000/">.ch</a>.
   </div>
 
   <script>
     let $ = document.getElementById.bind(document);
     let tableRef = $('walls').getElementsByTagName('tbody')[0];
-    const currencies = ['', 'TMH', 'BTC', 'ETH', 'MHC'];
-
-    window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
-      alert("Error occured: " + errorMsg); //or any message
-      return false;
-    }
-
-    window.test = true;
-    let qt = window.qt;
-
-    let config = {
-      currency: 'tmh',
-      net: 'dev',
-    }
-
-    const calcBalance = address => {
-      return new Promise((resolve, reject) => {
-        if (true) {
-          setTimeout(() => {
-            toLog(address);
-            resolve(calcBalance(address));
-          }, 10);
-        } else {
-          return getDataFromQt
-            .calcBalance(address, `${config.currency}_${config.net}`)
-            .then(data => {
-              let balance = 0;
-              if (data[2]) {
-                let res = JSON.parse(data[2]);
-                balance = res.balance / 1e6;
-              }
-              toLog(data);
-              qtBlocked = false;
-              resolve(balance);
-            });
-        }
-      });
-    };
-
-    function run() {
-      new QWebChannel(qt.webChannelTransport, function (channel) {
-
-        toLog("start");
-
-        // общие методы работы с приложением
-        var mainWindow = channel.objects.mainWindow;
-        // mainWindow.openWalletPathInStandartExplorer(); // +
-        // mainWindow.getIpsServers('1', 'proxy', 10, 3); // +
-        // mainWindow.getIpsServers('2', 'torrent', 10, 3); // +
-        // mainWindow.getIpsServers('3', 'proxy_main', 10, 3); // +
-        // mainWindow.getIpsServers('4', 'torrent_main', 10, 3); // +
-
-        const group = "aaa__tmh"
-
-        // работа с транзакциями
-        var transactions = channel.objects.transactions;
-        transactions.calcBalance("0x00d5d7437fd0a10415cfb194e17a79cf63af018f5134bec07d", "tmh_dev");
-        return;
-
-        transactions.registerAddresses([{
-          address: "0x00d5d7437fd0a10415cfb194e17a79cf63af018f5134bec07d",
-          currency: "tmh_dev",
-          type: "torrent",
-          group: group,
-          name: "1"
-        }]);
-
-        transactions.setCurrentGroup(group)
-
-        setInterval(() => {
-          // toLog(address);
-          transactions.calcBalance("0x00d5d7437fd0a10415cfb194e17a79cf63af018f5134bec07d", "tmh_dev");
-        }, 250);
-
-
-        // transactions.getTxs2("0x00d5d7437fd0a10415cfb194e17a79cf63af018f5134bec07d", "tmh", 1, 2, true)
-        // transactions.calcBalance("0x00d5d7437fd0a10415cfb194e17a79cf63af018f5134bec07d", "tmh");
-
-        toLog("done");
-      });
-    }
-
-    function txsSetCurrentGroupResultJs(result, errorNum, errorMessage) {
-      toLog({
-        result,
-        errorNum,
-        errorMessage
-      })
-    }
-
-    function getIpsServersJs(requestId, json, errorInt, errorString) {
-      toLog({
-        requestId,
-        json,
-        errorInt,
-        errorString
-      })
-    }
-
-    function txsRegisterAddressJs(address, currency, errorNum, errorMessage) {
-      toLog({
-        address,
-        currency,
-        errorNum,
-        errorMessage
-      })
-    }
-
-    function txsGetTxs2Js(address, currency, result, errorNum, errorMessage) {
-      toLog({
-        address,
-        currency,
-        result,
-        errorNum,
-        errorMessage
-      });
-    }
-
-    function toLog(v) {
-      $('result').innerHTML = JSON.stringify(v) + "\n" + $('result').innerHTML;
-    }
-
-    function render(walls, type, balance) {
-      walls.forEach((address) => {
-        renderRow(address, type, balance);
-      })
-    }
 
     function renderRow(address, currency, balance) {
       var newRow = tableRef.insertRow(tableRef.rows.length);
@@ -190,37 +54,28 @@
     }
 
     function txsCalcBalanceResultJs(address, currency, result, errorNum, errorMessage) {
-      toLog({
-        address,
-        currency,
-        result,
-        errorNum,
-        errorMessage
-      })
+      const resultObj = JSON.parse(result);
+      renderRow(address, currency == "mtc_main" ? "MTC" : "TMH", resultObj.balance / 1e6)
     }
 
-    // (function () {
-    //   new QWebChannel(qt.webChannelTransport, function (channel) {
+    (function () {
+      new QWebChannel(qt.webChannelTransport, function (channel) {
 
-    //     // общие методы работы с приложением
-    //     var mainWindow = channel.objects.mainWindow;
-    //     // работа с транзакциями
-    //     var transactions = channel.objects.transactions;
+        // общие методы работы с приложением
+        var mainWindow = channel.objects.mainWindow;
 
-    //     mainWindow.getAllMHCWalletsJson(function (returnValue) {
-    //       render(JSON.parse(returnValue), "MHC", "000");
-    //     });
+        // работа с транзакциями
+        var transactions = channel.objects.transactions;
 
-    //     mainWindow.getAllWalletsJson(function (returnValue) {
-    //       // transactions.calcBalance(returnValue, "TMH");
-    //       render(JSON.parse(returnValue), "TMH", "000");
-    //       transactions.calcBalance(JSON.parse(returnValue), "TMH");
-    //     });
+        mainWindow.getAllMHCWalletsJson(function (returnValue) {
+          JSON.parse(returnValue).map(address => transactions.calcBalance(address, "mtc_main"));
+        });
 
-    //     // transactions.calcBalance("0x0025e6788cc3679ef135da65cf352a77b77d0cf1fc9bf8f962", "TMH");
-    //     // transactions.calcBalance("0x00da71d4394d5f7eabfe1bbf5d7175ddf1b357041c7a2870e6", "MHC");
-    //   });
-    // })();
+        mainWindow.getAllWalletsJson(function (returnValue) {
+          JSON.parse(returnValue).map(address => transactions.calcBalance(address, "tmh_dev"));
+        });
+      });
+    })();
 
     function openInBrowser(url) {
       new QWebChannel(qt.webChannelTransport, function (channel) {
