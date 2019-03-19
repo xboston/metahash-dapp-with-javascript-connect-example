@@ -14,8 +14,8 @@
   <style>
     #walls td {
       padding-left: 10px;
+      padding-right: 10px;
     }
-
     #walls tr:nth-child(even) {
       background-color: #f2f2f2
     }
@@ -27,7 +27,7 @@
   <div class="container">
     <div class="row">
       <div class="one-ten column" style="margin-top: 10%">
-        <h4>DApp example (<span href="#" onclick="return openInBrowser('https://github.com/xboston/metahash-dapp-with-javascript-connect-example');">v0004</span>)</h4>
+        <h4>DApp example (<span href="#" onclick="return openInBrowser('https://github.com/xboston/metahash-dapp-with-javascript-connect-example');">v0005</span>)</h4>
       </div>
     </div>
   </div>
@@ -37,7 +37,9 @@
         <tr>
           <th>Address</th>
           <th>Type</th>
-          <th>Balance</th>
+          <th onclick="return sortTable(2);" style="cursor: pointer">Balance</th>
+          <th onclick="return sortTable(3);" style="cursor: pointer">Delegate</th>
+          <th onclick="return sortTable(4);" style="cursor: pointer">Forged</th>
         </tr>
       </thead>
       <tbody id="wall_list"></tbody>
@@ -46,21 +48,23 @@
 
   <div class="container" style="margin-bottom: 5%">
     github: <a href="#" onclick="return openInBrowser('https://github.com/xboston/metahash-dapp-with-javascript-connect-example');">metahash-dapp-with-javascript-connect-example</a>
-    24cd784, from <a href="#" onclick="return openInBrowser('https://metawat.ch/');">metawat</><a href="https://metawat.ch/">.ch</a>.
+    db64e04, from <a href="#" onclick="return openInBrowser('https://metawat.ch/');">metawat</><a href="https://metawat.ch/">.ch</a>.
   </div>
 
   <script>
     let $ = document.getElementById.bind(document);
     let tableRef = $('walls').getElementsByTagName('tbody')[0];
 
-    function renderRow(address, currency, balance) {
-      var newRow = tableRef.insertRow(tableRef.rows.length);
+    function renderRow(address, currency, balance, delegate, forged) {
+      let newRow = tableRef.insertRow(tableRef.rows.length);
       newRow.insertCell(0).appendChild(document.createTextNode(address));
       newRow.insertCell(1).appendChild(document.createTextNode(currency));
       newRow.insertCell(2).appendChild(document.createTextNode(balance));
+      newRow.insertCell(3).appendChild(document.createTextNode(delegate));
+      newRow.insertCell(4).appendChild(document.createTextNode(forged));
     }
 
-    function sortTable() {
+    function sortTable(n) {
       let table, rows, switching, i, x, y, shouldSwitch;
       table = $('walls');
       switching = true;
@@ -69,8 +73,8 @@
         rows = table.rows;
         for (i = 1; i < (rows.length - 1); i++) {
           shouldSwitch = false;
-          x = rows[i].getElementsByTagName("TD")[2];
-          y = rows[i + 1].getElementsByTagName("TD")[2];
+          x = rows[i].getElementsByTagName('TD')[n];
+          y = rows[i + 1].getElementsByTagName('TD')[n];
           if (Number(x.innerHTML) < Number(y.innerHTML)) {
             shouldSwitch = true;
             break;
@@ -85,7 +89,7 @@
 
     function txsCalcBalanceResultJs(address, currency, result, errorNum, errorMessage) {
       const resultObj = JSON.parse(result);
-      renderRow(address, currency == "mhc_main" ? "MHC" : "TMH", resultObj.balance / 1e6)
+      renderRow(address, currency == 'mhc_main' ? 'MHC' : 'TMH', resultObj.balance / 1e6, resultObj.delegate / 1e6, resultObj.forged / 1e6)
     }
 
     (function () {
@@ -104,7 +108,7 @@
           JSON.parse(returnValue).map(address => transactions.calcBalance(address, "tmh_dev"));
         })
 
-        setTimeout(() => sortTable(), 100);
+        setTimeout(() => sortTable(2), 100);
       });
     })();
 
