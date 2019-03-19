@@ -1,6 +1,8 @@
 # MetaGate DApp example
 DApp приложения сети https://metahash.org - это не только статичные HTML страницы с картинками, это полноценная экосистема с множетсвом внутренних методов.
 
+![alt text](https://raw.githubusercontent.com/xboston/metahash-dapp-with-javascript-connect-example/master/images/dapp-wallet-0005.png)
+
 Это приложение использует два самых простых метода - получение списка кошельков пользователя тестовой и главной сети MetaHash.
 
 ## Как это работает
