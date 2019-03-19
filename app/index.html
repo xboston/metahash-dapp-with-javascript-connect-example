@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>MetaHash DAPP from https://metawat.ch/</title>
+  <title>MetaHash DApp from https://metawat.ch/</title>
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,6 +11,15 @@
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
   <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+  <style>
+    #walls td {
+      padding-left: 10px;
+    }
+
+    #walls tr:nth-child(even) {
+      background-color: #f2f2f2
+    }
+  </style>
 </head>
 
 <body style="background: #fff;">
@@ -18,12 +27,10 @@
   <div class="container">
     <div class="row">
       <div class="one-ten column" style="margin-top: 10%">
-        <h4>DApp demo from <a ref="#" onclick="return openInBrowser('https://metawat.ch/');">metawat.ch</a> (v0003)</h4>
-        <p>Примеры работы приложений внутри сети MetaHash.</p>
+        <h4>DApp example (<span href="#" onclick="return openInBrowser('https://github.com/xboston/metahash-dapp-with-javascript-connect-example');">v0004</span>)</h4>
       </div>
     </div>
   </div>
-
   <div class="container">
     <table class="u-full-width" id="walls">
       <thead>
@@ -39,7 +46,7 @@
 
   <div class="container" style="margin-bottom: 5%">
     github: <a href="#" onclick="return openInBrowser('https://github.com/xboston/metahash-dapp-with-javascript-connect-example');">metahash-dapp-with-javascript-connect-example</a>
-    fdb7f2d, проект <a href="#" onclick="return openInBrowser('https://metawat.ch/');">metawat</><a href="http://localhost:8000/">.ch</a>.
+    24cd784, from <a href="#" onclick="return openInBrowser('https://metawat.ch/');">metawat</><a href="https://metawat.ch/">.ch</a>.
   </div>
 
   <script>
@@ -53,27 +60,51 @@
       newRow.insertCell(2).appendChild(document.createTextNode(balance));
     }
 
+    function sortTable() {
+      let table, rows, switching, i, x, y, shouldSwitch;
+      table = $('walls');
+      switching = true;
+      while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+          shouldSwitch = false;
+          x = rows[i].getElementsByTagName("TD")[2];
+          y = rows[i + 1].getElementsByTagName("TD")[2];
+          if (Number(x.innerHTML) < Number(y.innerHTML)) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+        if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+        }
+      }
+    }
+
     function txsCalcBalanceResultJs(address, currency, result, errorNum, errorMessage) {
       const resultObj = JSON.parse(result);
-      renderRow(address, currency == "mtc_main" ? "MTC" : "TMH", resultObj.balance / 1e6)
+      renderRow(address, currency == "mhc_main" ? "MHC" : "TMH", resultObj.balance / 1e6)
     }
 
     (function () {
       new QWebChannel(qt.webChannelTransport, function (channel) {
 
-        // общие методы работы с приложением
+        // работа с методами окна
         var mainWindow = channel.objects.mainWindow;
-
         // работа с транзакциями
         var transactions = channel.objects.transactions;
 
         mainWindow.getAllMHCWalletsJson(function (returnValue) {
-          JSON.parse(returnValue).map(address => transactions.calcBalance(address, "mtc_main"));
+          JSON.parse(returnValue).map(address => transactions.calcBalance(address, "mhc_main"));
         });
 
         mainWindow.getAllWalletsJson(function (returnValue) {
           JSON.parse(returnValue).map(address => transactions.calcBalance(address, "tmh_dev"));
-        });
+        })
+
+        setTimeout(() => sortTable(), 100);
       });
     })();
 
