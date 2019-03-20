@@ -16,10 +16,10 @@ DApp приложения сети https://metahash.org - это не тольк
 <script>
 (function () {
     new QWebChannel(qt.webChannelTransport, function (channel) {
-    var mainWindow = channel.objects.mainWindow;
-    mainWindow.getAllWalletsJson(function (returnValue) {
-        alert(JSON.parse(returnValue));
-    });
+        var mainWindow = channel.objects.mainWindow;
+        mainWindow.getAllWalletsJson(function (returnValue) {
+            alert(JSON.parse(returnValue));
+        });
     });
 })();
 </script>
