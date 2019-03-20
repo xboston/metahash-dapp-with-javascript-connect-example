@@ -27,7 +27,7 @@
   <div class="container">
     <div class="row">
       <div class="one-ten column" style="margin-top: 10%">
-        <h4>DApp example (<span href="#" onclick="return openInBrowser('https://github.com/xboston/metahash-dapp-with-javascript-connect-example');">v0005</span>)</h4>
+        <h4>DApp example (<span href="#" onclick="return openInBrowser('https://github.com/xboston/metahash-dapp-with-javascript-connect-example');">v0006</span>)</h4>
       </div>
     </div>
   </div>
@@ -37,9 +37,9 @@
         <tr>
           <th>Address</th>
           <th>Type</th>
-          <th onclick="return sortTable(2);" style="cursor: pointer">Balance</th>
-          <th onclick="return sortTable(3);" style="cursor: pointer">Delegate</th>
-          <th onclick="return sortTable(4);" style="cursor: pointer">Forged</th>
+          <th onclick="return sortTable(2);" style="cursor: pointer" title="Current balance on your wallets">Balance</th>
+          <th onclick="return sortTable(3);" style="cursor: pointer" title="Total delegated coins on nodes">Delegated</th>
+          <th onclick="return sortTable(4);" style="cursor: pointer" title="Total rewards of this wallet from forging">Rewards</th>
         </tr>
       </thead>
       <tbody id="wall_list"></tbody>
@@ -89,7 +89,7 @@
 
     function txsCalcBalanceResultJs(address, currency, result, errorNum, errorMessage) {
       const resultObj = JSON.parse(result);
-      renderRow(address, currency == 'mhc_main' ? 'MHC' : 'TMH', resultObj.balance / 1e6, resultObj.delegate / 1e6, resultObj.forged / 1e6)
+      renderRow(address, currency == 'mhc_main' ? 'MHC' : 'TMH', resultObj.balance / 1e6, (resultObj.delegate - resultObj.undelegate) / 1e6, resultObj.forged / 1e6)
     }
 
     (function () {
